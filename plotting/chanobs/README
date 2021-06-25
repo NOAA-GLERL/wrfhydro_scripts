@@ -1,0 +1,35 @@
+this is a basic workflow I set up for comparing wrfhydro streamflow to USGS gages
+
+
+steps:
+0. associate_gage_fid.sh
+	this reads in `Route_Link.nc` and prints out a table `gages.txt` with two cols: feature_id, gage_id
+
+1. get_obs.R
+	this short script uses the dataRetrieval pkg to grab USGS obs data
+		- it uses gages.txt to determine which gages to grab
+		- it determines the time frame by user defined `t0` and `tf`
+		  !!! USE CAUTION with t0,tf and timezone, dataRetrieval handles timezone in an unintuitive way !!!
+	        - it currently subsets more frequent data to only hourly data (no averaging)
+
+	depending on the number of gages and the timeframe, this can be slow (10-15 mins?)
+	thats why i only want to have to do this once--it saves the OBS data to an Rdata file which can
+	then be loaded in by chanobs2, which then runs very quickly
+
+2. chanobs2.R
+	prints skill statistics and draws hydrographs
+	
+
+
+
+
+other files:
+- myutils2.R
+	helper functions called by chanobs2
+
+- gages.txt
+	table which pairs up NWM feature IDS with USGS gages
+	it may be useful to cut this down (by looking at specific streams, larger streams, etc.) in order to make the number of plots more reasonable
+	if so, i would recommend doing this after step 1; this way all the obs are saved but you can analyze a smaller portion	
+	
+
